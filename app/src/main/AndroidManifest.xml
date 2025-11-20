@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".SnakeGameActivity"
             android:name=".BattleActivity"
             android:exported="false" />
         <activity
