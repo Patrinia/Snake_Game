@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SnakeGameActivity">
+
+    <com.example.myapplication.SnakeView
+        android:id="@+id/snake_game_area"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#A3E4D7"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/control_buttons_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1" />
+
+    <Button
+        android:id="@+id/btn_restart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="다시 하기"
+        android:textSize="32sp"
+        android:padding="20dp"
+        android:visibility="gone"  app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/control_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="248dp"
+            android:layout_height="251dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingEnd="32dp">
+
+            <Button
+                android:id="@+id/btn_up"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:text="UP" />
+
+            <LinearLayout
+                android:layout_width="229dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_left"
+                    android:layout_width="102dp"
+                    android:layout_height="80dp"
+                    android:text="LEFT" />
+
+                <Button
+                    android:id="@+id/btn_right"
+                    android:layout_width="111dp"
+                    android:layout_height="80dp"
+                    android:layout_marginStart="16dp"
+                    android:text="RIGHT" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_down"
+                android:layout_width="120dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                android:text="DOWN" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="77dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="32dp"
+            android:text="액션 버튼" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
