@@ -20,13 +20,26 @@ class SnakeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // --- 게임 상태 및 통신 변수 ---
+    // 변수
     var isPlaying = false // 현재 게임 진행 상태
-    internal var currentDirection = Direction.RIGHT // 현재 뱀의 이동 방향 (Activity에서 접근)
 
-    // 게임 오버 이벤트를 Activity로 전달하기 위한 인터페이스 정의
+    // 현재 뱀의 이동 방향 (Activity에서 접근)
+    internal var currentDirection = Direction.RIGHT
+    // 다음 프레임에 적용될 방향 (연속 입력 방지용)
+    private var nextDirection = Direction.RIGHT
+
+    private var foodType: FoodType = FoodType.NORMAL // 현재 먹이의 종류
+
+    // 먹이 종류 정의: 일반 과자, 황금 과자
+    enum class FoodType { NORMAL, GOLD }
+
+    // 황금 과자 등장 확률 (30% 확률)
+    private val GOLD_FOOD_CHANCE = 30
+
+    // 이벤트를 외부로 전달하기 위한 인터페이스 정의
     interface GameListener {
-        fun onGameOver(score: Int)
+        fun onGameOver(score: Int) // 게임 오버 이벤트
+        fun onEnterBattle() // 전투 진입 이벤트
     }
     // Activity에서 설정할 리스너 인스턴스
     var gameListener: GameListener? = null
@@ -63,7 +76,11 @@ class SnakeView @JvmOverloads constructor(
 
     // 뱀의 방향을 설정 (Activity에서 호출)
     fun setDirection(direction: Direction) {
-        currentDirection = direction
+        // 현재 설정된 nextDirection과 다를 때만 업데이트
+        // (즉, 한 프레임에 여러 번의 입력을 받아도 다음 프레임에 적용될 방향은 하나만 유지)
+        if (direction != nextDirection) {
+            nextDirection = direction
+        }
     }
 
     // 게임 루프를 멈추고 상태를 중지
@@ -74,6 +91,8 @@ class SnakeView @JvmOverloads constructor(
 
     // 게임 상태 초기화 및 루프 재시작
     fun resetGame() {
+        stopGame()
+
         snake = mutableListOf(Coordinate(10, 10), Coordinate(9, 10), Coordinate(8, 10))
         currentDirection = Direction.RIGHT
         food = null
@@ -82,7 +101,8 @@ class SnakeView @JvmOverloads constructor(
     }
 
     // 게임 루프를 시작
-    private fun startGame() {
+    fun startGame() {
+        if (isPlaying) return
         if (food == null) generateFood()
         isPlaying = true
         handler.postDelayed(gameRunnable, frameRate)
@@ -101,6 +121,15 @@ class SnakeView @JvmOverloads constructor(
         }
         // 먹이 그리기
         food?.let {
+
+            // 먹이 종류에 따라 Paint 색깔 설정
+            if (foodType == FoodType.GOLD) {
+                foodPaint.color = android.graphics.Color.YELLOW // 황금색
+            } else {
+                foodPaint.color = android.graphics.Color.RED // 빨간색
+            }
+
+            // 먹이 그리기
             canvas.drawRect(it.x * cellSize, it.y * cellSize, (it.x + 1) * cellSize, (it.y + 1) * cellSize, foodPaint)
         }
     }
@@ -109,6 +138,10 @@ class SnakeView @JvmOverloads constructor(
 
     // 뱀을 한 칸 이동시키고, 먹이 섭취 및 충돌 확인
     fun moveSnake() {
+        if (!isPlaying) return
+
+        currentDirection = nextDirection
+
         val head = snake.first(); var newX = head.x; var newY = head.y
         when (currentDirection) { Direction.UP -> newY--; Direction.DOWN -> newY++; Direction.LEFT -> newX--; Direction.RIGHT -> newX++ }
         val newHead = Coordinate(newX, newY)
@@ -120,7 +153,18 @@ class SnakeView @JvmOverloads constructor(
         snake.add(0, newHead) // 길이 증가
 
         if (food != null && newHead == food) {
-            generateFood()
+
+            if (foodType == FoodType.GOLD) {
+                // 황금 과자 섭취 시 전투 진입 이벤트 발생
+                gameListener?.onEnterBattle() // 배틀 이벤트 호출
+
+                food = null
+                foodType = FoodType.NORMAL
+
+                return // 전투 진입 후 뱀의 이동 및 길이 조정 로직은 중단
+            } else {
+                generateFood()
+            }
         } else {
             snake.removeAt(snake.size - 1) // 길이 유지
         }
@@ -137,9 +181,33 @@ class SnakeView @JvmOverloads constructor(
     // 뱀과 겹치지 않는 무작위 위치에 먹이 생성
     private fun generateFood() {
         var newFood: Coordinate
+        var isGold: Boolean = false // 황금 과자 생성 여부를 판단할 변수
+
+        // 황금 과자 확률 계산
+        if (random.nextInt(100) < GOLD_FOOD_CHANCE) {
+            isGold = true
+        }
+
         do {
-            newFood = Coordinate(random.nextInt(columnCount), random.nextInt(rowCount))
-        } while (snake.contains(newFood))
+            // 0부터 (칸 수 - 1) 사이에서 무작위 x, y 좌표 생성
+            val randX = random.nextInt(columnCount)
+            val randY = random.nextInt(rowCount)
+            newFood = Coordinate(randX, randY)
+
+            // 모서리 4칸 제외 조건
+            val isNearEdge = (newFood.x < 4 || newFood.x >= columnCount - 4) ||
+                    (newFood.y < 4 || newFood.y >= rowCount - 4)
+
+            // 겹침 방지 + 황금 과자일 경우 모서리 제외
+        } while (snake.contains(newFood) || (isGold && isNearEdge))
+
         food = newFood
+
+        // 먹이 타입 설정
+        if (isGold) {
+            foodType = FoodType.GOLD
+        } else {
+            foodType = FoodType.NORMAL
+        }
     }
 }
