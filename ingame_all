@@ -52,7 +52,7 @@
     <path
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
-        android:pathData="M15 16H343V454H15z"/>
+        android:pathData="M15 18H343V456H15z"/>
     <group>
         <path
             android:pathData="M275 163H305V193H275z"/>
