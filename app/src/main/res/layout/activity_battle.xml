@@ -29,7 +29,8 @@
             android:contentDescription="적 캐릭터"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/numpad" />
+            app:srcCompat="@drawable/numpad"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/player"
@@ -40,7 +41,8 @@
             android:contentDescription="플레이어 캐릭터"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@drawable/numpad"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/whofirst"
@@ -60,10 +62,9 @@
             android:id="@+id/playerchoose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="14dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/player"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/player"
             app:srcCompat="@drawable/paper100px" />
 
         <ImageView
