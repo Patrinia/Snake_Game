@@ -58,6 +58,8 @@ class BattleActivity : AppCompatActivity() {
         playerChoose.setImageDrawable(null)
         enemyChoose.setImageDrawable(null)
         whoFirst.text = ""
+
+        btnRSPZone.visibility = View.VISIBLE
         diceZone.visibility = View.GONE
 
         btnScissor.setOnClickListener { playRSP(0) }
@@ -104,13 +106,33 @@ class BattleActivity : AppCompatActivity() {
             1 -> { // 플레이어 승
                 whoFirst.text = "선공"
                 readyToBattle = true
-                showDiceUI()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+
+                    // 5초 후 이미지 제거
+                    playerChoose.setImageDrawable(null)
+                    enemyChoose.setImageDrawable(null)
+                    whoFirst.text = ""
+
+                    // Dice UI로 전환
+                    showDiceUI()
+
+                }, 5000)
             }
 
             2 -> { // AI 승
                 whoFirst.text = "후공"
                 readyToBattle = true
-                showDiceUI()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+
+                    playerChoose.setImageDrawable(null)
+                    enemyChoose.setImageDrawable(null)
+                    whoFirst.text = ""
+
+                    showDiceUI()
+
+                }, 5000)
             }
         }
     }
@@ -123,11 +145,11 @@ class BattleActivity : AppCompatActivity() {
 
     // ⭐ 주사위 굴리기
     private fun rollDice() {
-        // 굴리는 애니메이션
-        val animator = ObjectAnimator.ofFloat(diceImage, "rotation", 0f, 360f)
-        animator.duration = 500
-        animator.interpolator = LinearInterpolator()
-        animator.start()
+        // 굴리는 애니메이션 주사위가 시계 방향으로 돌아감, 로직 변경으로 인한 미사용, 추후 삭제 예정
+//        val animator = ObjectAnimator.ofFloat(diceImage, "rotation", 0f, 360f)
+//        animator.duration = 500
+//        animator.interpolator = LinearInterpolator()
+//        animator.start()
 
         Handler(Looper.getMainLooper()).postDelayed({
             val diceNumber = Random.nextInt(1, 7)
@@ -141,9 +163,7 @@ class BattleActivity : AppCompatActivity() {
                 else -> R.drawable.dice6
             }
 
-            diceImage.setImageResource(diceRes)
-
-            // 🎯 여기서 diceNumber에 따라 공격력/피해량/턴 적용 등 원하는 기능을 추가하면 됨
+            playerChoose.setImageResource(diceRes)
 
         }, 500)
     }
