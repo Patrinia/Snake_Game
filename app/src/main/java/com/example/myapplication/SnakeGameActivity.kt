@@ -112,20 +112,19 @@ class SnakeGameActivity : AppCompatActivity(), GameListener {
     override fun onGameOver(score: Int) {
         snakeView.stopGame() // 게임 루프 중지
 
-        // 게임 오버 AlertDialog 표시
-        AlertDialog.Builder(this)
-            .setTitle("GAME OVER")
-            .setMessage("최종 점수: $score\n\n다시 플레이 하시겠습니까?")
-            .setPositiveButton("다시 하기") { dialog, which ->
-                restartGame()
-            }
-            .setNegativeButton("종료") { dialog, which ->
-                finish()
-            }
-            .setCancelable(false)
-            .show()
+        // 최종 점수를 뱀의 현재 길이로 설정
+        val finalLengthScore = snakeView.getSnakeLength()
 
-        Log.d("SnakeGame", "Game Over! 최종 점수: $score")
+        // GameOverActivity로 이동
+        val intent = Intent(this, GameOverActivity::class.java).apply {
+            // 뱀의 길이를 FINAL_SCORE로 전달
+            putExtra("FINAL_SCORE", finalLengthScore)
+        }
+        startActivity(intent)
+
+        finish()
+
+        Log.d("SnakeGame", "Game Over! 최종 점수: $finalLengthScore")
     }
 
     // SnakeView에서 적(황금 과자) 섭취 시 호출됨 (GameListener 구현)
@@ -139,6 +138,9 @@ class SnakeGameActivity : AppCompatActivity(), GameListener {
         val intent = Intent(this, BattleActivity::class.java).apply {
             // 뱀의 길이를 HP로 간주하여 BattleActivity에 전달
             putExtra(EXTRA_PLAYER_HP, currentSnakeLength)
+
+            // 적 타입 정보를 Intent에 전달 (Enum 이름)
+            putExtra("ENEMY_TYPE_KEY", enemyType.name) // name 속성을 사용하여 문자열로 변환
 
             // 누적된 스탯 값들을 Intent에 추가로 전달
             putExtra(EXTRA_EXTRA_ATK, playerExtraAtk)

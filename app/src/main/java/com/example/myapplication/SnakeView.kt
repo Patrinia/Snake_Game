@@ -42,6 +42,7 @@ class SnakeView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     // --- 변수 및 Bitmap ---
+    private lateinit var SnackBitmap: Bitmap // ⬅일반 먹이 이미지
     private lateinit var enemyBitmapA: Bitmap // 적 이미지 A
     private lateinit var enemyBitmapB: Bitmap // 적 이미지 B
     private lateinit var enemyBitmapC: Bitmap // 적 이미지 C
@@ -53,7 +54,7 @@ class SnakeView @JvmOverloads constructor(
 
     private var eatablesType: EatablesType = EatablesType.NORMAL_SNACK // 현재 맵에 생성된 먹이의 타입
 
-    private val GOLD_FOOD_CHANCE = 30 // 황금 과자(적) 등장 확률 (30%)
+    private val GOLD_FOOD_CHANCE = 20 // 황금 과자(적) 등장 확률 (20%)
 
     var gameListener: GameListener? = null // 외부로 이벤트를 전달할 리스너
 
@@ -62,8 +63,8 @@ class SnakeView @JvmOverloads constructor(
         Coordinate(10, 10), Coordinate(9, 10), Coordinate(8, 10)
     )
     private var food: Coordinate? = null // 먹이의 좌표
-    private var columnCount = 20 // 맵의 가로 칸 수
-    private var rowCount = 20 // 맵의 세로 칸 수
+    private var columnCount = 18 // 맵의 가로 칸 수
+    private var rowCount = 18 // 맵의 세로 칸 수
 
     // --- 타이머 및 그리기 도구 ---
     private val handler = Handler(Looper.getMainLooper()) // UI 업데이트를 위한 핸들러
@@ -71,8 +72,7 @@ class SnakeView @JvmOverloads constructor(
     private val fastFrameRate: Long = 100 // 가속 프레임 속도 (빠름, 100ms)
     private var currentFrameRate: Long = normalFrameRate // 현재 적용 중인 프레임 속도
     private val random = Random() // 랜덤 값 생성을 위한 객체
-    private val snakePaint = Paint().apply { color = android.graphics.Color.BLUE } // 뱀을 그릴 때 사용할 페인트 (파란색)
-    private val foodPaint = Paint().apply { color = android.graphics.Color.RED } // 먹이를 그릴 때 사용할 페인트 (빨간색)
+    private val snakePaint = Paint().apply { color = android.graphics.Color.parseColor("#4169E1") }
 
     // 뱀 이동 루프를 반복 실행하는 Runnable
     private val gameRunnable: Runnable = object : Runnable {
@@ -124,11 +124,10 @@ class SnakeView @JvmOverloads constructor(
             val top = it.y * cellSize - offset
 
             if (eatablesType == EatablesType.NORMAL_SNACK) {
-                // 일반 과자일 경우 기존처럼 색깔 칠하기 (1x1 크기)
-                foodPaint.color = android.graphics.Color.RED
-                canvas.drawRect(it.x * cellSize, it.y * cellSize, (it.x + 1) * cellSize, (it.y + 1) * cellSize, foodPaint)
+                // 일반 과자일 경우
+                canvas.drawBitmap(SnackBitmap, left, top, null)
             } else {
-                // 적 타입일 경우 이미지(Bitmap)로 그리기
+                // 적 타입일 경우
                 val bitmapToDraw = when (eatablesType) {
                     EatablesType.ENEMY_TYPE_A -> enemyBitmapA
                     EatablesType.ENEMY_TYPE_B -> enemyBitmapB
@@ -292,11 +291,13 @@ class SnakeView @JvmOverloads constructor(
         val targetSizePx = (cellSizePx * scaleFactor).toInt()
 
         // 이미지를 리소스로부터 로드
+        SnackBitmap = BitmapFactory.decodeResource(resources, R.drawable.snack)
         enemyBitmapA = BitmapFactory.decodeResource(resources, R.drawable.enemy_a)
         enemyBitmapB = BitmapFactory.decodeResource(resources, R.drawable.enemy_b)
         enemyBitmapC = BitmapFactory.decodeResource(resources, R.drawable.enemy_c)
 
         // 계산된 목표 크기에 맞게 Bitmap 크기 조정
+        SnackBitmap = Bitmap.createScaledBitmap(SnackBitmap, targetSizePx, targetSizePx, false)
         enemyBitmapA = Bitmap.createScaledBitmap(enemyBitmapA, targetSizePx, targetSizePx, false)
         enemyBitmapB = Bitmap.createScaledBitmap(enemyBitmapB, targetSizePx, targetSizePx, false)
         enemyBitmapC = Bitmap.createScaledBitmap(enemyBitmapC, targetSizePx, targetSizePx, false)
