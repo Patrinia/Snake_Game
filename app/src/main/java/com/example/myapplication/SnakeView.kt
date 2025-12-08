@@ -1,6 +1,9 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import com.example.myapplication.R
 import android.util.AttributeSet
 import android.view.View
 import android.graphics.Canvas
@@ -28,7 +31,11 @@ class SnakeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // 변수
+    // --- 변수 및 Bitmap ---
+    private lateinit var enemyBitmapA: Bitmap
+    private lateinit var enemyBitmapB: Bitmap
+    private lateinit var enemyBitmapC: Bitmap
+
     var isPlaying = false
 
     internal var currentDirection = Direction.RIGHT
@@ -37,7 +44,7 @@ class SnakeView @JvmOverloads constructor(
     private var eatablesType: EatablesType = EatablesType.NORMAL_SNACK
 
     // 황금 과자(적) 등장 확률 (30% 확률)
-    private val GOLD_FOOD_CHANCE = 30
+    private val GOLD_FOOD_CHANCE = 90
 
     // 이벤트를 외부로 전달하기 위한 인터페이스 정의
     interface GameListener {
@@ -72,10 +79,16 @@ class SnakeView @JvmOverloads constructor(
 
     // --- 뷰 라이프사이클 및 게임 제어 함수 ---
 
-    // 뷰가 화면에 붙을 때 게임 시작
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         startGame()
+    }
+
+    // 뷰의 크기가 변경되거나 설정될 때 호출됩니다.
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        // 뷰 크기가 결정된 후 Bitmap 로드 및 크기 조정을 실행
+        loadAndScaleBitmaps()
     }
 
     // 뱀의 방향을 설정 (Activity에서 호출)
@@ -112,17 +125,35 @@ class SnakeView @JvmOverloads constructor(
 
     // 현재 속도를 설정하고 게임 루프의 타이밍을 재설정
     fun setSpeed(isFast: Boolean) {
-        // 새 속도 결정
         currentFrameRate = if (isFast) fastFrameRate else normalFrameRate
 
-        // 기존 루프 중지
         handler.removeCallbacks(gameRunnable)
 
-        // 새 속도로 루프 재시작
         if (isPlaying) {
             handler.postDelayed(gameRunnable, currentFrameRate)
         }
     }
+
+    private fun loadAndScaleBitmaps() {
+        // 1. 뱀 칸 크기(cellSizePx)를 계산합니다.
+        val cellSizePx = width / columnCount
+
+        // 🚨 수정: 아이콘을 2배 크기로 만들기 위해 목표 크기를 2배로 설정합니다.
+        val scaleFactor = 1.5f
+
+        val targetSizePx = (cellSizePx * scaleFactor).toInt()
+
+        // 1. 이미지를 리소스로부터 로드 (기존과 동일)
+        enemyBitmapA = BitmapFactory.decodeResource(resources, R.drawable.enemy_a)
+        enemyBitmapB = BitmapFactory.decodeResource(resources, R.drawable.enemy_b)
+        enemyBitmapC = BitmapFactory.decodeResource(resources, R.drawable.enemy_c)
+
+        // 2. 뱀 칸 크기(cellSizePx)의 2배 크기(targetSizePx)에 맞게 Bitmap 크기 조정
+        enemyBitmapA = Bitmap.createScaledBitmap(enemyBitmapA, targetSizePx, targetSizePx, false)
+        enemyBitmapB = Bitmap.createScaledBitmap(enemyBitmapB, targetSizePx, targetSizePx, false)
+        enemyBitmapC = Bitmap.createScaledBitmap(enemyBitmapC, targetSizePx, targetSizePx, false)
+    }
+
 
     // --- 그리기 함수 ---
 
@@ -133,25 +164,46 @@ class SnakeView @JvmOverloads constructor(
 
         // 뱀 그리기
         for (coord in snake) {
-            canvas.drawRect(coord.x * cellSize, coord.y * cellSize, (coord.x + 1) * cellSize, (coord.y + 1) * cellSize, snakePaint)
+            canvas.drawRect(
+                coord.x * cellSize,
+                coord.y * cellSize,
+                (coord.x + 1) * cellSize,
+                (coord.y + 1) * cellSize,
+                snakePaint
+            )
         }
         // 먹이 그리기
         food?.let {
 
-            // EatablesType에 따라 색깔 설정
-            foodPaint.color = when (eatablesType) {
-                EatablesType.NORMAL_SNACK -> android.graphics.Color.RED      // 일반 과자 (빨간색)
-                EatablesType.ENEMY_TYPE_A -> android.graphics.Color.MAGENTA // 적 A (마젠타)
-                EatablesType.ENEMY_TYPE_B -> android.graphics.Color.YELLOW   // 적 B (노란색)
-                EatablesType.ENEMY_TYPE_C -> android.graphics.Color.CYAN      // 적 C (청록색)
-            }
+            val offset = cellSize / 4f // 🚨 2배 커진 이미지를 중앙에 배치하기 위한 오프셋 (셀 크기의 절반)
 
-            // 먹이 그리기
-            canvas.drawRect(it.x * cellSize, it.y * cellSize, (it.x + 1) * cellSize, (it.y + 1) * cellSize, foodPaint)
+            val left = it.x * cellSize - offset
+            val top = it.y * cellSize - offset
+
+            if (eatablesType == EatablesType.NORMAL_SNACK) {
+                // 일반 과자일 경우 기존처럼 색깔 칠하기
+                foodPaint.color = android.graphics.Color.RED
+                // 일반 과자는 크기가 1x1이므로 offset 없이 그립니다.
+                canvas.drawRect(it.x * cellSize, it.y * cellSize, (it.x + 1) * cellSize, (it.y + 1) * cellSize, foodPaint)
+            } else {
+                // 이미지(Bitmap)로 그리기
+                val bitmapToDraw = when (eatablesType) {
+                    EatablesType.ENEMY_TYPE_A -> enemyBitmapA
+                    EatablesType.ENEMY_TYPE_B -> enemyBitmapB
+                    EatablesType.ENEMY_TYPE_C -> enemyBitmapC
+
+                    // 🚨 오류 해결: when 식의 모든 경우를 처리하기 위해 else 추가 (일반 과자는 위에서 처리됨)
+                    else -> enemyBitmapA // 안전을 위해 기본값 설정
+                }
+
+                // 2배 커진 이미지를 중앙에 배치하기 위해 offset이 적용된 좌표에 그립니다.
+                canvas.drawBitmap(bitmapToDraw, left, top, null)
+            }
         }
     }
 
     // --- 핵심 로직 함수 ---
+    // 💡 이 함수들이 onDraw() 밖으로 나와야 합니다!
 
     // 뱀을 한 칸 이동시키고, 먹이 섭취 및 충돌 확인
     fun moveSnake() {
@@ -159,8 +211,12 @@ class SnakeView @JvmOverloads constructor(
 
         currentDirection = nextDirection
 
-        val head = snake.first(); var newX = head.x; var newY = head.y
-        when (currentDirection) { Direction.UP -> newY--; Direction.DOWN -> newY++; Direction.LEFT -> newX--; Direction.RIGHT -> newX++ }
+        val head = snake.first();
+        var newX = head.x;
+        var newY = head.y
+        when (currentDirection) {
+            Direction.UP -> newY--; Direction.DOWN -> newY++; Direction.LEFT -> newX--; Direction.RIGHT -> newX++
+        }
         val newHead = Coordinate(newX, newY)
 
         if (checkCollision(newHead)) {
@@ -173,10 +229,10 @@ class SnakeView @JvmOverloads constructor(
 
             // 일반 과자가 아닐 경우 (즉, 적 타입일 경우) 배틀 이벤트 발생
             if (eatablesType != EatablesType.NORMAL_SNACK) {
-                gameListener?.onEnterBattle(eatablesType) // 타입 정보를 전달
+                gameListener?.onEnterBattle(eatablesType)
 
                 food = null
-                eatablesType = EatablesType.NORMAL_SNACK // 기본 타입으로 리셋
+                eatablesType = EatablesType.NORMAL_SNACK
 
                 return // 전투 진입 후 뱀의 이동 및 길이 조정 로직은 중단
             } else {
@@ -191,7 +247,8 @@ class SnakeView @JvmOverloads constructor(
 
     // 충돌 확인 (벽 또는 자기 몸통)
     private fun checkCollision(newHead: Coordinate): Boolean {
-        val hitWall = newHead.x < 0 || newHead.x >= columnCount || newHead.y < 0 || newHead.y >= rowCount
+        val hitWall =
+            newHead.x < 0 || newHead.x >= columnCount || newHead.y < 0 || newHead.y >= rowCount
         val hitSelf = snake.subList(1, snake.size).contains(newHead)
         return hitWall || hitSelf
     }
@@ -224,7 +281,11 @@ class SnakeView @JvmOverloads constructor(
         // 먹이 타입 설정
         if (isEnemy) {
             // 3가지 적 타입 중 랜덤으로 하나 결정
-            val enemyTypes = listOf(EatablesType.ENEMY_TYPE_A, EatablesType.ENEMY_TYPE_B, EatablesType.ENEMY_TYPE_C)
+            val enemyTypes = listOf(
+                EatablesType.ENEMY_TYPE_A,
+                EatablesType.ENEMY_TYPE_B,
+                EatablesType.ENEMY_TYPE_C
+            )
             eatablesType = enemyTypes[random.nextInt(enemyTypes.size)]
         } else {
             eatablesType = EatablesType.NORMAL_SNACK
