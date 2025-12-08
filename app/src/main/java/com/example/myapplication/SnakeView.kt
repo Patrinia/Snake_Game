@@ -10,8 +10,8 @@ import android.os.Looper
 import java.util.Random
 
 
-data class Coordinate(val x: Int, val y: Int) // 뱀의 몸통 및 먹이 위치 저장 (좌표)
-enum class Direction { UP, DOWN, LEFT, RIGHT } // 뱀의 이동 방향
+data class Coordinate(val x: Int, val y: Int)
+enum class Direction { UP, DOWN, LEFT, RIGHT }
 
 // EatablesType: 뱀이 획득할 수 있는 모든 타입 (일반 과자 또는 배틀 적)
 enum class EatablesType {
@@ -29,14 +29,11 @@ class SnakeView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     // 변수
-    var isPlaying = false // 현재 게임 진행 상태
+    var isPlaying = false
 
-    // 현재 뱀의 이동 방향 (Activity에서 접근)
     internal var currentDirection = Direction.RIGHT
-    // 다음 프레임에 적용될 방향 (연속 입력 방지용)
     private var nextDirection = Direction.RIGHT
 
-    // 🚨 수정: foodType을 EatablesType으로 변경
     private var eatablesType: EatablesType = EatablesType.NORMAL_SNACK
 
     // 황금 과자(적) 등장 확률 (30% 확률)
@@ -44,24 +41,23 @@ class SnakeView @JvmOverloads constructor(
 
     // 이벤트를 외부로 전달하기 위한 인터페이스 정의
     interface GameListener {
-        fun onGameOver(score: Int) // 게임 오버 이벤트
-        fun onEnterBattle(enemyType: EatablesType) // 🚨 수정: 어떤 적으로 진입했는지 타입을 전달
+        fun onGameOver(score: Int)
+        fun onEnterBattle(enemyType: EatablesType)
     }
-    // Activity에서 설정할 리스너 인스턴스
     var gameListener: GameListener? = null
 
-    private var snake: MutableList<Coordinate> = mutableListOf( // 뱀의 초기 위치
+    private var snake: MutableList<Coordinate> = mutableListOf(
         Coordinate(10, 10), Coordinate(9, 10), Coordinate(8, 10)
     )
     private var food: Coordinate? = null
-    private var columnCount = 20 // 가로 칸 수 (그리드)
-    private var rowCount = 20    // 세로 칸 수 (그리드)
+    private var columnCount = 20
+    private var rowCount = 20
 
     // --- 타이머 및 그리기 도구 ---
     private val handler = Handler(Looper.getMainLooper())
-    private val normalFrameRate: Long = 300 // 뱀 속도 (300ms마다 이동)
-    private val fastFrameRate: Long = 100 // 가속 속도
-    private var currentFrameRate: Long = normalFrameRate // 현재 적용 중인 속도
+    private val normalFrameRate: Long = 300
+    private val fastFrameRate: Long = 100
+    private var currentFrameRate: Long = normalFrameRate
     private val random = Random()
     private val snakePaint = Paint().apply { color = android.graphics.Color.BLUE }
     private val foodPaint = Paint().apply { color = android.graphics.Color.RED }
@@ -70,10 +66,6 @@ class SnakeView @JvmOverloads constructor(
     private val gameRunnable: Runnable = object : Runnable {
         override fun run() {
             moveSnake()
-<<<<<<< Updated upstream
-            // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 가속 반영
-=======
->>>>>>> Stashed changes
             handler.postDelayed(this, currentFrameRate)
         }
     }
@@ -88,8 +80,6 @@ class SnakeView @JvmOverloads constructor(
 
     // 뱀의 방향을 설정 (Activity에서 호출)
     fun setDirection(direction: Direction) {
-        // 현재 설정된 nextDirection과 다를 때만 업데이트
-        // (즉, 한 프레임에 여러 번의 입력을 받아도 다음 프레임에 적용될 방향은 하나만 유지)
         if (direction != nextDirection) {
             nextDirection = direction
         }
@@ -117,10 +107,6 @@ class SnakeView @JvmOverloads constructor(
         if (isPlaying) return
         if (food == null) generateFood()
         isPlaying = true
-<<<<<<< Updated upstream
-        // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 시작 속도 반영
-=======
->>>>>>> Stashed changes
         handler.postDelayed(gameRunnable, currentFrameRate)
     }
 
@@ -152,7 +138,7 @@ class SnakeView @JvmOverloads constructor(
         // 먹이 그리기
         food?.let {
 
-            // 🚨 수정: EatablesType에 따라 색깔 설정
+            // EatablesType에 따라 색깔 설정
             foodPaint.color = when (eatablesType) {
                 EatablesType.NORMAL_SNACK -> android.graphics.Color.RED      // 일반 과자 (빨간색)
                 EatablesType.ENEMY_TYPE_A -> android.graphics.Color.MAGENTA // 적 A (마젠타)
@@ -185,10 +171,9 @@ class SnakeView @JvmOverloads constructor(
 
         if (food != null && newHead == food) {
 
-            // 🚨 수정: 일반 과자가 아닐 경우 (즉, 적 타입일 경우) 배틀 이벤트 발생
+            // 일반 과자가 아닐 경우 (즉, 적 타입일 경우) 배틀 이벤트 발생
             if (eatablesType != EatablesType.NORMAL_SNACK) {
-                // 적(황금 과자) 섭취 시 전투 진입 이벤트 발생
-                gameListener?.onEnterBattle(eatablesType) // 🚨 수정: 타입 정보를 전달
+                gameListener?.onEnterBattle(eatablesType) // 타입 정보를 전달
 
                 food = null
                 eatablesType = EatablesType.NORMAL_SNACK // 기본 타입으로 리셋
@@ -214,7 +199,7 @@ class SnakeView @JvmOverloads constructor(
     // 뱀과 겹치지 않는 무작위 위치에 먹이 생성
     private fun generateFood() {
         var newFood: Coordinate
-        var isEnemy: Boolean = false // 적 타입 생성 여부를 판단할 변수
+        var isEnemy: Boolean = false
 
         // 황금 과자(적) 확률 계산
         if (random.nextInt(100) < GOLD_FOOD_CHANCE) {
@@ -238,7 +223,7 @@ class SnakeView @JvmOverloads constructor(
 
         // 먹이 타입 설정
         if (isEnemy) {
-            // 🚨 수정: 3가지 적 타입 중 랜덤으로 하나 결정
+            // 3가지 적 타입 중 랜덤으로 하나 결정
             val enemyTypes = listOf(EatablesType.ENEMY_TYPE_A, EatablesType.ENEMY_TYPE_B, EatablesType.ENEMY_TYPE_C)
             eatablesType = enemyTypes[random.nextInt(enemyTypes.size)]
         } else {

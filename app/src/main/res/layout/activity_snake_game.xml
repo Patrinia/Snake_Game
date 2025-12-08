@@ -87,12 +87,8 @@
         </LinearLayout>
 
         <Button
-<<<<<<< Updated upstream
             android:id="@+id/btn_action"
             android:layout_width="wrap_content"
-=======
-            android:id="@+id/btn_action"  android:layout_width="wrap_content"
->>>>>>> Stashed changes
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:text="가속" />
