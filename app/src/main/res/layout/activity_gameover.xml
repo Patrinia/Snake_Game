@@ -17,47 +17,47 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:contentDescription="@string/background"
-        app:srcCompat="@drawable/snack"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="295dp"
-        tools:layout_editor_absoluteY="220dp" />
-
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/game_title_S"
+        android:text="@string/gameover"
         android:textSize="70sp"
         android:textStyle="bold"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="93dp"
-        tools:layout_editor_absoluteY="56dp" />
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="39dp" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/game_title_G"
-        android:textSize="70sp"
+        android:text="@string/best_record"
+        android:textSize="40sp"
         android:textStyle="bold"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="107dp"
-        tools:layout_editor_absoluteY="149dp" />
+        tools:layout_editor_absoluteX="47dp"
+        tools:layout_editor_absoluteY="195dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/record"
+        android:textSize="40sp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="242dp"
+        tools:layout_editor_absoluteY="200dp" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_start"
+        android:text="@string/restart"
         android:textSize="30sp"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="298dp" />
+        tools:layout_editor_absoluteX="139dp"
+        tools:layout_editor_absoluteY="333dp" />
 
     <Button
         android:id="@+id/button2"
@@ -67,7 +67,7 @@
         android:textSize="20sp"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="435dp" />
+        tools:layout_editor_absoluteY="451dp" />
 
     <Button
         android:id="@+id/button3"
@@ -78,5 +78,7 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="144dp"
         tools:layout_editor_absoluteY="551dp" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
