@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">My Application</string>
+    '메인화면'
+    <string name="game_title_S">SNAKE</string>
+    <string name="game_title_G">GAME</string>
+    <string name="button_start">게임시작</string>
+    <string name="button_option">설정</string>
+    <string name="button_end">게임종료</string>
+    <string name="background">background </string>
+    '게임오버화면'
+    <string name="restart">재시작 </string>
+    <string name="gameover">GAME OVER </string>
+    <string name="best_record">최고기록 : </string>
+    <string name="record"> </string>
 </resources>
