@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
+<<<<<<< Updated upstream
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.SnakeView.GameListener
 import com.example.myapplication.databinding.ActivitySnakeGameBinding
+=======
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.databinding.ActivitySnakeGameBinding
+import android.util.Log
+import android.widget.Toast
+import com.example.myapplication.SnakeView.GameListener
+import android.view.MotionEvent
+>>>>>>> Stashed changes
 
 // SnakeGameActivity: 사용자 입력 및 게임 오버 이벤트를 처리하는 Activity
 class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener 인터페이스 구현
@@ -29,6 +39,14 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
 
         setupDirectionButtons() // 방향키 버튼 이벤트 설정
         setupActionButton() // 가속 버튼 이벤트 리스너 연결
+<<<<<<< Updated upstream
+=======
+
+        /*// '다시 하기' 버튼 클릭 시 재시작 함수 호출
+        binding.btnRestart.setOnClickListener {
+            restartGame()
+        }*/
+>>>>>>> Stashed changes
     }
 
     // --- 이벤트 처리 ---
@@ -56,8 +74,12 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
     // 가속 버튼 터치 이벤트 처리
     @SuppressLint("ClickableViewAccessibility")
     private fun setupActionButton() {
+<<<<<<< Updated upstream
         // 🚨 타입 추론 오류 해결: 람다 파라미터 v와 event에 타입을 명시
         binding.btnAction.setOnTouchListener { v: View, event: MotionEvent ->
+=======
+        binding.btnAction.setOnTouchListener { v, event ->
+>>>>>>> Stashed changes
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // 버튼을 누르는 순간: 가속 모드 시작
@@ -67,17 +89,23 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     // 버튼에서 손을 떼는 순간: 기본 속도로 복귀
                     snakeView.setSpeed(false)
+<<<<<<< Updated upstream
 
                     // 경고 해결: performClick() 호출을 통해 클릭 이벤트를 명시적으로 발생
+=======
+>>>>>>> Stashed changes
                     v.performClick()
                     true
                 }
                 else -> false
             }
         }
+<<<<<<< Updated upstream
 
         // 경고 해결: setOnTouchListener 사용 시 접근성 경고를 막기 위해 빈 OnClickListener 추가
         binding.btnAction.setOnClickListener { /* Empty */ }
+=======
+>>>>>>> Stashed changes
     }
 
     // --- Game Over/재시작 로직 ---

@@ -70,7 +70,10 @@ class SnakeView @JvmOverloads constructor(
     private val gameRunnable: Runnable = object : Runnable {
         override fun run() {
             moveSnake()
+<<<<<<< Updated upstream
             // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 가속 반영
+=======
+>>>>>>> Stashed changes
             handler.postDelayed(this, currentFrameRate)
         }
     }
@@ -114,7 +117,10 @@ class SnakeView @JvmOverloads constructor(
         if (isPlaying) return
         if (food == null) generateFood()
         isPlaying = true
+<<<<<<< Updated upstream
         // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 시작 속도 반영
+=======
+>>>>>>> Stashed changes
         handler.postDelayed(gameRunnable, currentFrameRate)
     }
 
