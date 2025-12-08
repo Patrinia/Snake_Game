@@ -1,14 +1,15 @@
 package com.example.myapplication
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.databinding.ActivitySnakeGameBinding
-import android.view.View
-import android.util.Log
-import android.widget.Toast
-import com.example.myapplication.Direction
-import com.example.myapplication.SnakeView.GameListener
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.SnakeView.GameListener
+import com.example.myapplication.databinding.ActivitySnakeGameBinding
 
 // SnakeGameActivity: 사용자 입력 및 게임 오버 이벤트를 처리하는 Activity
 class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener 인터페이스 구현
@@ -27,11 +28,7 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
         snakeView.gameListener = this // Activity를 GameListener로 등록
 
         setupDirectionButtons() // 방향키 버튼 이벤트 설정
-
-        /*// '다시 하기' 버튼 클릭 시 재시작 함수 호출
-        binding.btnRestart.setOnClickListener {
-            restartGame()
-        }*/
+        setupActionButton() // 가속 버튼 이벤트 리스너 연결
     }
 
     // --- 이벤트 처리 ---
@@ -56,6 +53,33 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
         }
     }
 
+    // 가속 버튼 터치 이벤트 처리
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupActionButton() {
+        // 🚨 타입 추론 오류 해결: 람다 파라미터 v와 event에 타입을 명시
+        binding.btnAction.setOnTouchListener { v: View, event: MotionEvent ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // 버튼을 누르는 순간: 가속 모드 시작
+                    snakeView.setSpeed(true)
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    // 버튼에서 손을 떼는 순간: 기본 속도로 복귀
+                    snakeView.setSpeed(false)
+
+                    // 경고 해결: performClick() 호출을 통해 클릭 이벤트를 명시적으로 발생
+                    v.performClick()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // 경고 해결: setOnTouchListener 사용 시 접근성 경고를 막기 위해 빈 OnClickListener 추가
+        binding.btnAction.setOnClickListener { /* Empty */ }
+    }
+
     // --- Game Over/재시작 로직 ---
 
     // SnakeView에서 충돌 발생 시 호출됨
@@ -63,7 +87,7 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
         snakeView.stopGame() // 뱀 이동 루프 중지
 
         // 게임 오버 점수 및 재시작 버튼이 포함된 AlertDialog 띄우기
-        android.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle("GAME OVER")
             .setMessage("최종 점수: $score\n\n다시 플레이 하시겠습니까?")
             .setPositiveButton("다시 하기") { dialog, which ->
@@ -78,18 +102,26 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
         Log.d("SnakeGame", "Game Over! 최종 점수: $score")
     }
 
-    override fun onEnterBattle() {
+    // SnakeView에서 황금 과자(적) 섭취 시 호출됨
+    override fun onEnterBattle(enemyType: EatablesType) {
         snakeView.stopGame() // 뱀 이동 루프 중지
 
+        // 적 타입 이름을 사용자 친화적인 문자열로 변환
+        val enemyName = when (enemyType) {
+            EatablesType.ENEMY_TYPE_A -> "보스 몬스터 아이콘"
+            EatablesType.ENEMY_TYPE_B -> "중급 몬스터 아이콘"
+            EatablesType.ENEMY_TYPE_C -> "일반 몬스터 아이콘"
+            EatablesType.NORMAL_SNACK -> "일반 과자" // 여기에 도달하지 않아야 함
+        }
+
         // 임시 메시지 창 (AlertDialog) 띄우기
-        android.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle("전투 진입")
-            .setMessage("황금 과자를 획득했습니다! 전투 화면으로 진입합니다.")
+            .setMessage("$enemyName 을(를) 획득했습니다! 전투 화면으로 진입합니다.")
             .setPositiveButton("전투 끝") { dialog, which ->
                 // TODO: BattleActivity에서 복귀 시점에 이 로직을 실행
-                // **Intent(this, BattleActivity::class.java).apply { startActivity(this) }** // 임시로 메시지 출력
-                Toast.makeText(this, "뱀 게임 복귀 및 재개", android.widget.Toast.LENGTH_SHORT).show()
-                resumeGame()
+                Toast.makeText(this, "뱀 게임 복귀 및 재개", Toast.LENGTH_SHORT).show()
+                resumeGame() // 멈췄던 게임 재개
 
             }
             .setCancelable(false) // 전투 진입은 취소할 수 없음
@@ -107,7 +139,6 @@ class SnakeGameActivity : AppCompatActivity(), GameListener { // GameListener �
 
     // 게임을 초기화하고 다시 시작
     private fun restartGame() {
-        /*binding.btnRestart.visibility = View.GONE // 버튼 숨기기*/
         snakeView.resetGame() // SnakeView 상태 초기화 및 루프 재시작 요청
     }
 }

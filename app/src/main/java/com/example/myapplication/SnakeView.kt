@@ -13,6 +13,14 @@ import java.util.Random
 data class Coordinate(val x: Int, val y: Int) // 뱀의 몸통 및 먹이 위치 저장 (좌표)
 enum class Direction { UP, DOWN, LEFT, RIGHT } // 뱀의 이동 방향
 
+// EatablesType: 뱀이 획득할 수 있는 모든 타입 (일반 과자 또는 배틀 적)
+enum class EatablesType {
+    NORMAL_SNACK, // 일반 과자 (빨간색)
+    ENEMY_TYPE_A, // 배틀 적 A
+    ENEMY_TYPE_B, // 배틀 적 B
+    ENEMY_TYPE_C  // 배틀 적 C
+}
+
 // SnakeView: 뱀 게임의 로직 및 화면 그리기를 담당하는 커스텀 뷰
 class SnakeView @JvmOverloads constructor(
     context: Context,
@@ -28,18 +36,16 @@ class SnakeView @JvmOverloads constructor(
     // 다음 프레임에 적용될 방향 (연속 입력 방지용)
     private var nextDirection = Direction.RIGHT
 
-    private var foodType: FoodType = FoodType.NORMAL // 현재 먹이의 종류
+    // 🚨 수정: foodType을 EatablesType으로 변경
+    private var eatablesType: EatablesType = EatablesType.NORMAL_SNACK
 
-    // 먹이 종류 정의: 일반 과자, 황금 과자
-    enum class FoodType { NORMAL, GOLD }
-
-    // 황금 과자 등장 확률 (30% 확률)
+    // 황금 과자(적) 등장 확률 (30% 확률)
     private val GOLD_FOOD_CHANCE = 30
 
     // 이벤트를 외부로 전달하기 위한 인터페이스 정의
     interface GameListener {
         fun onGameOver(score: Int) // 게임 오버 이벤트
-        fun onEnterBattle() // 전투 진입 이벤트
+        fun onEnterBattle(enemyType: EatablesType) // 🚨 수정: 어떤 적으로 진입했는지 타입을 전달
     }
     // Activity에서 설정할 리스너 인스턴스
     var gameListener: GameListener? = null
@@ -53,7 +59,9 @@ class SnakeView @JvmOverloads constructor(
 
     // --- 타이머 및 그리기 도구 ---
     private val handler = Handler(Looper.getMainLooper())
-    private val frameRate: Long = 300 // 뱀 속도 (300ms마다 이동)
+    private val normalFrameRate: Long = 300 // 뱀 속도 (300ms마다 이동)
+    private val fastFrameRate: Long = 100 // 가속 속도
+    private var currentFrameRate: Long = normalFrameRate // 현재 적용 중인 속도
     private val random = Random()
     private val snakePaint = Paint().apply { color = android.graphics.Color.BLUE }
     private val foodPaint = Paint().apply { color = android.graphics.Color.RED }
@@ -62,7 +70,8 @@ class SnakeView @JvmOverloads constructor(
     private val gameRunnable: Runnable = object : Runnable {
         override fun run() {
             moveSnake()
-            handler.postDelayed(this, frameRate)
+            // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 가속 반영
+            handler.postDelayed(this, currentFrameRate)
         }
     }
 
@@ -105,7 +114,22 @@ class SnakeView @JvmOverloads constructor(
         if (isPlaying) return
         if (food == null) generateFood()
         isPlaying = true
-        handler.postDelayed(gameRunnable, frameRate)
+        // 🚨 수정: normalFrameRate 대신 currentFrameRate를 사용하여 시작 속도 반영
+        handler.postDelayed(gameRunnable, currentFrameRate)
+    }
+
+    // 현재 속도를 설정하고 게임 루프의 타이밍을 재설정
+    fun setSpeed(isFast: Boolean) {
+        // 새 속도 결정
+        currentFrameRate = if (isFast) fastFrameRate else normalFrameRate
+
+        // 기존 루프 중지
+        handler.removeCallbacks(gameRunnable)
+
+        // 새 속도로 루프 재시작
+        if (isPlaying) {
+            handler.postDelayed(gameRunnable, currentFrameRate)
+        }
     }
 
     // --- 그리기 함수 ---
@@ -122,11 +146,12 @@ class SnakeView @JvmOverloads constructor(
         // 먹이 그리기
         food?.let {
 
-            // 먹이 종류에 따라 Paint 색깔 설정
-            if (foodType == FoodType.GOLD) {
-                foodPaint.color = android.graphics.Color.YELLOW // 황금색
-            } else {
-                foodPaint.color = android.graphics.Color.RED // 빨간색
+            // 🚨 수정: EatablesType에 따라 색깔 설정
+            foodPaint.color = when (eatablesType) {
+                EatablesType.NORMAL_SNACK -> android.graphics.Color.RED      // 일반 과자 (빨간색)
+                EatablesType.ENEMY_TYPE_A -> android.graphics.Color.MAGENTA // 적 A (마젠타)
+                EatablesType.ENEMY_TYPE_B -> android.graphics.Color.YELLOW   // 적 B (노란색)
+                EatablesType.ENEMY_TYPE_C -> android.graphics.Color.CYAN      // 적 C (청록색)
             }
 
             // 먹이 그리기
@@ -154,15 +179,17 @@ class SnakeView @JvmOverloads constructor(
 
         if (food != null && newHead == food) {
 
-            if (foodType == FoodType.GOLD) {
-                // 황금 과자 섭취 시 전투 진입 이벤트 발생
-                gameListener?.onEnterBattle() // 배틀 이벤트 호출
+            // 🚨 수정: 일반 과자가 아닐 경우 (즉, 적 타입일 경우) 배틀 이벤트 발생
+            if (eatablesType != EatablesType.NORMAL_SNACK) {
+                // 적(황금 과자) 섭취 시 전투 진입 이벤트 발생
+                gameListener?.onEnterBattle(eatablesType) // 🚨 수정: 타입 정보를 전달
 
                 food = null
-                foodType = FoodType.NORMAL
+                eatablesType = EatablesType.NORMAL_SNACK // 기본 타입으로 리셋
 
                 return // 전투 진입 후 뱀의 이동 및 길이 조정 로직은 중단
             } else {
+                // 일반 과자 섭취
                 generateFood()
             }
         } else {
@@ -181,11 +208,11 @@ class SnakeView @JvmOverloads constructor(
     // 뱀과 겹치지 않는 무작위 위치에 먹이 생성
     private fun generateFood() {
         var newFood: Coordinate
-        var isGold: Boolean = false // 황금 과자 생성 여부를 판단할 변수
+        var isEnemy: Boolean = false // 적 타입 생성 여부를 판단할 변수
 
-        // 황금 과자 확률 계산
+        // 황금 과자(적) 확률 계산
         if (random.nextInt(100) < GOLD_FOOD_CHANCE) {
-            isGold = true
+            isEnemy = true
         }
 
         do {
@@ -198,16 +225,18 @@ class SnakeView @JvmOverloads constructor(
             val isNearEdge = (newFood.x < 4 || newFood.x >= columnCount - 4) ||
                     (newFood.y < 4 || newFood.y >= rowCount - 4)
 
-            // 겹침 방지 + 황금 과자일 경우 모서리 제외
-        } while (snake.contains(newFood) || (isGold && isNearEdge))
+            // 겹침 방지 + 적일 경우 모서리 제외
+        } while (snake.contains(newFood) || (isEnemy && isNearEdge))
 
         food = newFood
 
         // 먹이 타입 설정
-        if (isGold) {
-            foodType = FoodType.GOLD
+        if (isEnemy) {
+            // 🚨 수정: 3가지 적 타입 중 랜덤으로 하나 결정
+            val enemyTypes = listOf(EatablesType.ENEMY_TYPE_A, EatablesType.ENEMY_TYPE_B, EatablesType.ENEMY_TYPE_C)
+            eatablesType = enemyTypes[random.nextInt(enemyTypes.size)]
         } else {
-            foodType = FoodType.NORMAL
+            eatablesType = EatablesType.NORMAL_SNACK
         }
     }
 }
