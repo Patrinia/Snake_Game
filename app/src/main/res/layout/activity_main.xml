@@ -40,7 +40,7 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/game_title_S"
+        android:text="@string/game_title_C"
         android:textSize="70sp"
         android:textStyle="bold"
         tools:ignore="MissingConstraints"
@@ -51,22 +51,24 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/game_title_G"
+        android:text="@string/game_title_S"
         android:textSize="70sp"
         android:textStyle="bold"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="107dp"
+        tools:layout_editor_absoluteX="93dp"
         tools:layout_editor_absoluteY="149dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/greenbutton"
         android:text="@string/button_start"
+        android:textColor="#FFFFFF"
         android:textSize="30sp"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="298dp" />
+        tools:layout_editor_absoluteX="55dp"
+        tools:layout_editor_absoluteY="340dp" />
 
     <Button
         android:id="@+id/button2"

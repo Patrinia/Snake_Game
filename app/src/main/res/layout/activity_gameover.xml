@@ -49,15 +49,17 @@
         tools:layout_editor_absoluteX="242dp"
         tools:layout_editor_absoluteY="200dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/greenbutton"
         android:text="@string/restart"
+        android:textColor="#FFFFFF"
         android:textSize="30sp"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="139dp"
-        tools:layout_editor_absoluteY="333dp" />
+        tools:layout_editor_absoluteX="55dp"
+        tools:layout_editor_absoluteY="340dp" />
 
     <Button
         android:id="@+id/button2"
@@ -78,7 +80,6 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="144dp"
         tools:layout_editor_absoluteY="551dp" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
