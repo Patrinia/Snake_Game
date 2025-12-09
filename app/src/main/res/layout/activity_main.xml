@@ -27,6 +27,15 @@
         tools:layout_editor_absoluteX="295dp"
         tools:layout_editor_absoluteY="220dp" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="351dp"
+        android:layout_height="367dp"
+        app:srcCompat="@drawable/snake"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="-84dp"
+        tools:layout_editor_absoluteY="448dp" />
+
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
@@ -79,12 +88,6 @@
         tools:layout_editor_absoluteX="144dp"
         tools:layout_editor_absoluteY="551dp" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="351dp"
-        android:layout_height="367dp"
-        app:srcCompat="@drawable/snake"
-        tools:layout_editor_absoluteX="-84dp"
-        tools:layout_editor_absoluteY="448dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
