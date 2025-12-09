@@ -57,7 +57,7 @@ class BattleActivity : AppCompatActivity() {
     private lateinit var enemyHpBar: ProgressBar
     private lateinit var playerHpText: TextView
     private lateinit var enemyHpText: TextView
-
+    private lateinit var enemyImageView: ImageView
     private var isStatusOpen = false
     private var readyToBattle = false
 
@@ -130,6 +130,8 @@ class BattleActivity : AppCompatActivity() {
 
         btnStatus = findViewById(R.id.playerStatus)
 
+        enemyImageView = findViewById(R.id.enemy)
+
         //// SnakeGameActivity에서 전달된 HP를 받음
         initialSnakeHP = intent.getIntExtra(SnakeGameActivity.EXTRA_PLAYER_HP, playerMaxHP)
         // SnakeGameActivity에서 전달된 스탯을 받음
@@ -140,7 +142,10 @@ class BattleActivity : AppCompatActivity() {
         // 기존 초기 스탯(0)에 전달받은 누적 스탯을 더합니다.
         playerAtk += intentExtraAtk
         playerDef += intentExtraDef
-        playerDiceRemain += intentExtraDice
+        playerAdditionalDice = intentExtraDice
+        playerDiceRemain = 1 + playerAdditionalDice
+
+        setupBattle()
 
 
         // 적 초기 HP 저장
@@ -302,6 +307,49 @@ class BattleActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             rollDice()
         }, 500)
+    }
+
+    // 적 타입에 따라 이미지와 스탯을 설정하는 함수
+    private fun setupBattle() {
+        // 1. Intent에서 적 타입 문자열("ENEMY_TYPE_KEY")을 가져옴
+        val enemyTypeName = intent.getStringExtra("ENEMY_TYPE_KEY")
+
+        val enemyImageResId: Int
+
+        if (enemyTypeName != null) {
+            val enemyType = try {
+                com.example.myapplication.EatablesType.valueOf(enemyTypeName)
+            } catch (e: IllegalArgumentException) {
+                com.example.myapplication.EatablesType.ENEMY_TYPE_A
+            }
+
+            when (enemyType) {
+                com.example.myapplication.EatablesType.ENEMY_TYPE_A -> {
+                    enemyImageResId = R.drawable.monster_a // 적 A 이미지 리소스
+                    enemyAtk = 0 // 예시 스탯 설정
+                    enemyDef = 0
+                }
+                com.example.myapplication.EatablesType.ENEMY_TYPE_B -> {
+                    enemyImageResId = R.drawable.monster_b // 적 B 이미지 리소스
+                    enemyAtk = 0
+                    enemyDef = 0
+                }
+                com.example.myapplication.EatablesType.ENEMY_TYPE_C -> {
+                    enemyImageResId = R.drawable.monster_c // 적 C 이미지 리소스
+                    enemyAtk = 0
+                    enemyDef = 0
+                }
+                else -> {
+                    enemyImageResId = R.drawable.monster_a // 안전을 위한 기본값
+                }
+            }
+
+            // 적 ImageView에 이미지 리소스를 적용
+            enemyImageView.setImageResource(enemyImageResId)
+        }
+
+        // 최대 HP 및 현재 HP 설정
+        enemyHP = enemyMaxHP
     }
 
     //적의 자동 턴
@@ -486,7 +534,7 @@ class BattleActivity : AppCompatActivity() {
             // 최종 스탯 값들을 Intent에 담아 반환
             putExtra(EXTRA_FINAL_ATK, playerAtk)
             putExtra(EXTRA_FINAL_DEF, playerDef)
-            putExtra(EXTRA_FINAL_DICE, playerDiceRemain)
+            putExtra(EXTRA_FINAL_DICE, playerAdditionalDice)
         }
         setResult(RESULT_OK, resultIntent)
         finish() // Activity 종료 및 복귀
