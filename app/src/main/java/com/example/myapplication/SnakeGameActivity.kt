@@ -173,14 +173,15 @@ class SnakeGameActivity : AppCompatActivity(), GameListener {
 
                 Log.d("Battle", "전투 승리! 뱀 길이 $finalHp 로 업데이트. 누적 스탯: ATK:$playerExtraAtk, DEF:$playerExtraDef, DICE:$playerExtraDice")
 
+                // 승리했을 때만 게임을 재개
+                resumeGame()
+
             } else if (resultCode == RESULT_CANCELED) {
                 // 전투 패배 시
-                snakeView.setSnakeLength(0) // 뱀 길이 0 (게임 오버 유발)
                 Log.d("Battle", "전투 패배! 게임 오버 처리.")
+                // 뱀 길이를 0으로 설정하여 내부적으로 onGameOver를 호출하게 함
+                snakeView.setSnakeLength(0)
             }
-
-            // 뱀 게임 재개 로직 호출
-            resumeGame()
         }
     }
 
