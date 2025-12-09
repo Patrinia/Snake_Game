@@ -61,7 +61,7 @@ class BattleActivity : AppCompatActivity() {
     private var isStatusOpen = false
     private var readyToBattle = false
 
-    // ★ 전투 변수
+    // 전투 변수
     private var playerMaxHP = 20
     private var playerHP = playerMaxHP
 
@@ -76,13 +76,13 @@ class BattleActivity : AppCompatActivity() {
     private var playerAdditionalDice = 0
     // 주사위 잔여 횟수
 
-    //// HP
+    // HP
     // 뱀 게임에서 받아온 초기 HP (뱀의 길이)
     private var initialSnakeHP = 0
     // 적 초기 HP (승리 시 회복량 계산에 사용)
     private var enemyInitialHP = 0
 
-    // ★ 주사위 잔여 횟수
+    // 주사위 잔여 횟수
     private var playerDiceRemain = 1
     private var enemyDiceRemain = 1
 
@@ -107,24 +107,18 @@ class BattleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_battle)
 
-        //가위바위보 영역
         btnRSPZone = findViewById(R.id.btnRSP_zone)
 
-        //가위바위보 버튼
         btnScissor = findViewById(R.id.btnScissor)
         btnRock = findViewById(R.id.btnRock)
         btnPaper = findViewById(R.id.btnPaper)
 
-        // 주사위 영역
         diceZone = findViewById(R.id.dicezone)
-//        diceImage = findViewById(R.id.diceImage)
         btnRollDice = findViewById(R.id.btnRollDice)
 
-        // 선택 이미지
         playerChoose = findViewById(R.id.playerchoose)
         enemyChoose = findViewById(R.id.enemychoose)
 
-        // 결과 텍스트 ("선공" / "후공" 및 전투 로그)
         whoFirst = findViewById(R.id.whofirst)
 
         // 스테이터스창
@@ -348,7 +342,7 @@ class BattleActivity : AppCompatActivity() {
             if (enemyHP < 0) enemyHP = 0
 
             // 로그
-            whoFirst.text = "플레이어가 적에게 $damage 대미지를 줬습니다."
+            whoFirst.text = "$damage 대미지 공격!"
 
             // 남은 횟수 차감
             playerDiceRemain--
@@ -361,7 +355,7 @@ class BattleActivity : AppCompatActivity() {
             if (playerHP < 0) playerHP = 0
 
             // 로그
-            whoFirst.text = "적이 플레이어에게 $damage 대미지를 줬습니다."
+            whoFirst.text = "$damage 대미지 피격!"
 
             // 남은 횟수 차감
             enemyDiceRemain--
@@ -378,7 +372,7 @@ class BattleActivity : AppCompatActivity() {
             whoFirst.text = "패배!"
             btnRollDice.isEnabled = false
 
-            // 🚨 패배 시 즉시 SnakeGameActivity로 복귀 (길이 0을 전달하여 게임 오버 처리)
+            // 패배 시 즉시 SnakeGameActivity로 복귀 (길이 0을 전달하여 게임 오버 처리)
             Handler(Looper.getMainLooper()).postDelayed({
                 setResult(RESULT_CANCELED) // 패배 코드를 CANCELED로 간주
                 finish()
