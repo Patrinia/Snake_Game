@@ -10,6 +10,6 @@
     '게임오버화면'
     <string name="restart">재시작 </string>
     <string name="gameover">GAME OVER </string>
-    <string name="best_record">최고기록 : </string>
+    <string name="best_record">점수 : </string>
     <string name="record"> </string>
 </resources>

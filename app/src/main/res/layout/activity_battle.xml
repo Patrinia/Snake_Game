@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BattleActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/battlezone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="170dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/enemy"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="적 캐릭터"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/numpad" />
+
+        <ProgressBar
+            android:id="@+id/enemyHpBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:max="100"
+            android:progress="100"
+            android:progressTint="#FF4444"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/enemy" />
+
+        <!-- enemy HP Text (Bar 위에 겹치기) -->
+        <TextView
+            android:id="@+id/enemyHPText"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:text="100 / 100"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/enemy" />
+
+        <ImageView
+            android:id="@+id/player"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="플레이어 캐릭터"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/playerchar" />
+
+        <ProgressBar
+            android:id="@+id/playerHpBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:max="100"
+            android:progress="100"
+            android:progressTint="#FF4444"
+            app:layout_constraintBottom_toTopOf="@id/player"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- player HP Text (Bar 위에 겹침)-->
+        <TextView
+            android:id="@+id/playerHPText"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:text="100 / 100"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/player"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/whofirst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="선공"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="50sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/playerchoose"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@null" />
+
+        <ImageView
+            android:id="@+id/enemychoose"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@null" />
+
+        <LinearLayout
+            android:id="@+id/rewardZone"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:background="#B6DC39"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/reward1"
+                android:layout_width="100dp"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
+                android:contentDescription="보상1" />
+
+            <ImageButton
+                android:id="@+id/reward2"
+                android:layout_width="100dp"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
+                android:contentDescription="보상2" />
+
+            <ImageButton
+                android:id="@+id/reward3"
+                android:layout_width="100dp"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
+                android:contentDescription="보상3" />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/btnRSP_zone"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnScissor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="가위"
+            app:srcCompat="@drawable/scissors100px" />
+
+        <ImageButton
+            android:id="@+id/btnRock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="바위"
+            app:srcCompat="@drawable/rock100px" />
+
+        <ImageButton
+            android:id="@+id/btnPaper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_weight="1"
+            android:contentDescription="보"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:srcCompat="@drawable/paper100px" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dicezone"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <ImageButton
+            android:id="@+id/playerStatus"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="#FFFFFF"
+            android:contentDescription="플레이어 스테이터스"
+            app:srcCompat="@drawable/status" />
+
+        <ImageButton
+            android:id="@+id/btnRollDice"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="40dp"
+            android:background="#FFFFFF"
+            android:contentDescription="주사위 굴리기"
+            app:srcCompat="@drawable/rolldicebtn" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/statusWindow"
+        android:layout_width="226dp"
+        android:layout_height="472dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="#222222"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/dicezone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/txtStatusPlayerHP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HP: 20"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/txtStatusPlayerAtk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ATK: 0"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/txtStatusPlayerDef"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DEF: 0"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/txtStatusPlayerDiceCnt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="주사위 개수: 1"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
