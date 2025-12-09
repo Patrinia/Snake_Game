@@ -13,6 +13,15 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.random.Random
+import android.content.Intent
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_PLAYER_HP
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_NEW_PLAYER_HP
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_EXTRA_ATK
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_EXTRA_DEF
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_EXTRA_DICE
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_FINAL_ATK
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_FINAL_DEF
+import com.example.myapplication.SnakeGameActivity.Companion.EXTRA_FINAL_DICE
 
 class BattleActivity : AppCompatActivity() {
 
@@ -53,7 +62,7 @@ class BattleActivity : AppCompatActivity() {
     private var readyToBattle = false
 
     // ★ 전투 변수
-    private val playerMaxHP = 20
+    private var playerMaxHP = 20
     private var playerHP = playerMaxHP
 
 
@@ -66,6 +75,14 @@ class BattleActivity : AppCompatActivity() {
     private var enemyDef = 0
     private var playerAdditionalDice = 0
     // 주사위 잔여 횟수
+
+    //// HP
+    // 뱀 게임에서 받아온 초기 HP (뱀의 길이)
+    private var initialSnakeHP = 0
+    // 적 초기 HP (승리 시 회복량 계산에 사용)
+    private var enemyInitialHP = 0
+
+    // ★ 주사위 잔여 횟수
     private var playerDiceRemain = 1
     private var enemyDiceRemain = 1
 
@@ -119,6 +136,22 @@ class BattleActivity : AppCompatActivity() {
 
         btnStatus = findViewById(R.id.playerStatus)
 
+        //// SnakeGameActivity에서 전달된 HP를 받음
+        initialSnakeHP = intent.getIntExtra(SnakeGameActivity.EXTRA_PLAYER_HP, playerMaxHP)
+        // SnakeGameActivity에서 전달된 스탯을 받음
+        val intentExtraAtk = intent.getIntExtra(EXTRA_EXTRA_ATK, 0)
+        val intentExtraDef = intent.getIntExtra(EXTRA_EXTRA_DEF, 0)
+        val intentExtraDice = intent.getIntExtra(EXTRA_EXTRA_DICE, 0)
+        playerHP = initialSnakeHP // 뱀의 길이를 플레이어의 초기 HP로 설정
+        // 기존 초기 스탯(0)에 전달받은 누적 스탯을 더합니다.
+        playerAtk += intentExtraAtk
+        playerDef += intentExtraDef
+        playerDiceRemain += intentExtraDice
+
+
+        // 적 초기 HP 저장
+        enemyInitialHP = enemyMaxHP
+
         // 초기 상태
         playerChoose.setImageDrawable(null)
         enemyChoose.setImageDrawable(null)
@@ -140,8 +173,9 @@ class BattleActivity : AppCompatActivity() {
 
         //상태창 업데이트 함수
         // 초기 세팅
-        playerHpBar.max = playerMaxHP
-        enemyHpBar.max = enemyMaxHP
+        playerHpBar.max = initialSnakeHP // 뱀의 HP를 최대치로
+        playerMaxHP = initialSnakeHP     // 최대 HP 변수도 뱀 HP로 갱신
+        enemyHpBar.max = enemyInitialHP
 
         updateHpUI()
         updateStatusUI()
@@ -352,6 +386,13 @@ class BattleActivity : AppCompatActivity() {
         if (playerHP <= 0) {
             whoFirst.text = "패배!"
             btnRollDice.isEnabled = false
+
+            // 🚨 패배 시 즉시 SnakeGameActivity로 복귀 (길이 0을 전달하여 게임 오버 처리)
+            Handler(Looper.getMainLooper()).postDelayed({
+                setResult(RESULT_CANCELED) // 패배 코드를 CANCELED로 간주
+                finish()
+            }, 2000)
+
             return
         }
         if (enemyHP <= 0) {
@@ -451,8 +492,23 @@ class BattleActivity : AppCompatActivity() {
         // 보상창 숨기기
         rewardZone.visibility = View.GONE
 
-        // 전투 종료 문구 출력
-        whoFirst.text = "뱀게임으로 복귀"
+        // 뱀게임으로 복귀
+        // 전투에서 승리할 시 캐릭터는 상대방의 초기 hp 만큼 hp를 회복
+        // 뱀 게임으로 복귀할 최종 HP 계산
+        val finalHpAfterHeal = playerHP + enemyInitialHP
+
+        // 결과를 SnakeGameActivity에 반환
+        val resultIntent = Intent().apply {
+            // HP 반환
+            putExtra(SnakeGameActivity.EXTRA_NEW_PLAYER_HP, finalHpAfterHeal)
+
+            // 최종 스탯 값들을 Intent에 담아 반환
+            putExtra(EXTRA_FINAL_ATK, playerAtk)
+            putExtra(EXTRA_FINAL_DEF, playerDef)
+            putExtra(EXTRA_FINAL_DICE, playerDiceRemain)
+        }
+        setResult(RESULT_OK, resultIntent)
+        finish() // Activity 종료 및 복귀
     }
 
 }
