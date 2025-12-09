@@ -132,13 +132,12 @@ class BattleActivity : AppCompatActivity() {
         reward2 = findViewById(R.id.reward2)
         reward3 = findViewById(R.id.reward3)
 
-        // ⭐ HP Bar & Text
+        // HP Bar & Text
         playerHpBar = findViewById(R.id.playerHpBar)
         enemyHpBar = findViewById(R.id.enemyHpBar)
         playerHpText = findViewById(R.id.playerHPText)
         enemyHpText = findViewById(R.id.enemyHPText)
 
-        //상태창 업데이트 함수
         // 초기 세팅
         playerHpBar.max = playerMaxHP
         enemyHpBar.max = enemyMaxHP
@@ -173,7 +172,7 @@ class BattleActivity : AppCompatActivity() {
         isStatusOpen = !isStatusOpen
     }
 
-    // ⭐ HP Bar + 텍스트 즉시 갱신
+    // HP Bar + 텍스트 즉시 갱신
     private fun updateHpUI() {
         playerHpBar.progress = playerHP
         enemyHpBar.progress = enemyHP
@@ -266,9 +265,6 @@ class BattleActivity : AppCompatActivity() {
         diceZone.visibility = View.VISIBLE
     }
 
-    // ============================================================
-    // ⭐ 플레이어가 버튼으로 주사위 굴림
-    // ============================================================
     private fun playerTurn() {
         if (!isPlayerTurn) return                 // 내 턴 아니면 무시
         if (playerDiceRemain <= 0) return         // 남은 횟수 없으면 무시
@@ -294,7 +290,6 @@ class BattleActivity : AppCompatActivity() {
         btnRollDice.isEnabled = false
 
         Handler(Looper.getMainLooper()).postDelayed({
-            // 공통 처리 호출 (isPlayerTurn이 false이므로 적 방식으로 처리됨)
             rollDice()
         }, 500)
     }
@@ -340,13 +335,9 @@ class BattleActivity : AppCompatActivity() {
 
         updateHpUI()
         updateStatusUI()
-        // 전투 상태 체크 (HP, 남은 주사위 등)
         checkBattleState()
     }
 
-    // ============================================================
-    // ⭐ 전투 체력/턴 종료 체크
-    // ============================================================
     private fun checkBattleState() {
         // 승패 체크
         if (playerHP <= 0) {
@@ -417,10 +408,6 @@ class BattleActivity : AppCompatActivity() {
     }
 
     private fun showRewardSelection() {
-        // 주사위 영역, 가위바위보 영역 숨기기
-//        diceZone.visibility = View.GONE
-//        btnRSPZone.visibility = View.GONE
-
         // reward 3개 랜덤 추출
         val picked = rewardList.shuffled().take(3)
 

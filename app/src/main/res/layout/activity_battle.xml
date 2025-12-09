@@ -67,7 +67,7 @@
             android:contentDescription="플레이어 캐릭터"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/numpad" />
+            app:srcCompat="@drawable/Player" />
 
         <ProgressBar
             android:id="@+id/playerHpBar"
@@ -226,16 +226,18 @@
             android:id="@+id/playerStatus"
             android:layout_width="120dp"
             android:layout_height="120dp"
+            android:background="#FFFFFF"
             android:contentDescription="플레이어 스테이터스"
-            app:srcCompat="@drawable/numpad" />
+            app:srcCompat="@drawable/playerStatus" />
 
         <ImageButton
             android:id="@+id/btnRollDice"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginStart="40dp"
+            android:background="#FFFFFF"
             android:contentDescription="주사위 굴리기"
-            app:srcCompat="@drawable/numpad" />
+            app:srcCompat="@drawable/rollDice" />
 
     </LinearLayout>
 
