@@ -193,7 +193,7 @@ class BattleActivity : AppCompatActivity() {
         txtStatusHP.text = "현재 HP: $playerHP"
         txtStatusAtk.text = "추가 공격력: +$playerAtk"
         txtStatusDef.text = "방어력: +$playerDef"
-        txtStatusDiceCnt.text = "주사위 개수: +$playerDiceRemain"
+        txtStatusDiceCnt.text = "주사위 개수: +$playerAdditionalDice"
     }
 
     private fun toggleStatusWindow() {
