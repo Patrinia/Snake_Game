@@ -64,12 +64,12 @@ class BattleActivity : AppCompatActivity() {
     private var enemyAtk = 0
     private var playerDef = 0
     private var enemyDef = 0
-
-    // ★ 주사위 잔여 횟수
+    private var playerAdditionalDice = 0
+    // 주사위 잔여 횟수
     private var playerDiceRemain = 1
     private var enemyDiceRemain = 1
 
-    // ★ 턴 정보
+    // 턴 정보
     private var isPlayerTurn = true
 
     private val rewardList = listOf(
@@ -280,7 +280,7 @@ class BattleActivity : AppCompatActivity() {
         }, 500)
     }
 
-    // ⭐ 적의 자동 턴
+    //적의 자동 턴
 
     private fun enemyTurn() {
         // 남은 굴림 횟수 없으면 턴 종료
@@ -299,13 +299,9 @@ class BattleActivity : AppCompatActivity() {
         }, 500)
     }
 
-    // ============================================================
-    // ⭐ 공통 주사위 로직: 결과 생성 → 이미지 반영 → 대미지 적용 → 상태체크
-    // ============================================================
     private fun rollDice() {
         val diceNumber = Random.nextInt(1, 7)
 
-        // 주사위 리소스(화면에 보여줄 이미지)
         val diceRes = when (diceNumber) {
             1 -> R.drawable.dice1
             2 -> R.drawable.dice2
@@ -315,9 +311,7 @@ class BattleActivity : AppCompatActivity() {
             else -> R.drawable.dice6
         }
 
-        // 누가 굴렸는지에 따라 이미지 반영 위치와 대미지 계산/로그가 달라짐
         if (isPlayerTurn) {
-            // 플레이어가 굴림 -> playerChoose에 주사위 이미지 반영
             playerChoose.setImageResource(diceRes)
 
             val damage = (playerAtk + diceNumber - enemyDef).coerceAtLeast(0)
@@ -414,7 +408,7 @@ class BattleActivity : AppCompatActivity() {
         isPlayerTurn = true
 
         // 플레이어의 굴림 횟수 초기화
-        playerDiceRemain = 1
+        playerDiceRemain = 1 + playerAdditionalDice
 
         Handler(Looper.getMainLooper()).postDelayed({
             // 플레이어가 다시 굴릴 수 있도록 버튼 활성화
@@ -448,7 +442,7 @@ class BattleActivity : AppCompatActivity() {
             "hp" -> playerHP += reward.value
             "atk" -> playerAtk += reward.value
             "def" -> playerDef += reward.value
-            "dice" -> playerDiceRemain += reward.value
+            "dice" -> playerAdditionalDice += reward.value
         }
 
         updateHpUI()
